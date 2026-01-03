@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Input, Stack, Text, Divider } from "@chakra-ui/react";
+import { Box, Button, Input, Stack, Text, Divider, Flex } from "@chakra-ui/react";
 
 /* ---------- 共通関数 ---------- */
 
@@ -63,8 +63,8 @@ function App() {
     };
 
     return (
-        <Box p={6}>
-            <Box maxW="420px" mx="auto" w="100%" p={6} borderWidth={1} borderRadius="lg">
+        <Flex justify="center" p={6}>
+            <Box maxW="300px" w="100%" mx="auto" p={6} borderWidth={1} borderRadius="lg">
                 <Text size="md" fontSize="xl" fontWeight="bold" mb={8}>
                     残業時間計算ツール
                 </Text>
@@ -107,7 +107,7 @@ function App() {
                     </Button>
                 </Stack>
             </Box>
-        </Box>
+        </Flex>
     );
 }
 
