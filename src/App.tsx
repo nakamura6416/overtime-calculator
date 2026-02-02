@@ -86,17 +86,17 @@ function App() {
 
         // 週リセット
         setWeeklyOvertimeMinutes(0);
-        setWeeklyOvertimeInput("0:00");
+        setWeeklyOvertimeInput("");
         setActualEndTime(INITIAL_TIME);
     };
 
     // 全リセット
     const handleResetAll = () => {
         setWeeklyOvertimeMinutes(0);
-        setWeeklyOvertimeInput("0:00");
+        setWeeklyOvertimeInput("");
 
         setTotalOvertimeMinutes(0);
-        setTotalInput("0:00");
+        setTotalInput("");
 
         setGrandTotalMinutes(null);
         setActualEndTime(INITIAL_TIME);
@@ -129,7 +129,7 @@ function App() {
                         <Input
                             type="text"
                             inputMode="numeric"
-                            placeholder="hhmm（例: 330）"
+                            placeholder="hh:mm"
                             value={weeklyOvertimeInput}
                             onChange={(e) => setWeeklyOvertimeInput(e.target.value.replace(/\D/g, ""))}
                             onBlur={() => {
@@ -167,7 +167,7 @@ function App() {
                         <Input
                             type="text"
                             inputMode="numeric"
-                            placeholder="hhmm（例: 1234）"
+                            placeholder="hh:mm"
                             value={totalInput}
                             onChange={(e) => setTotalInput(e.target.value.replace(/\D/g, ""))}
                             onBlur={() => {
