@@ -22,6 +22,18 @@ const loadNumber = (key: string): number => {
     return saved ? Number(saved) : 0;
 };
 
+// ★ hhmm → h:mm 補正
+const normalizeHHMM = (value: string): string => {
+    const digits = value.replace(/\D/g, "");
+    if (digits.length === 0) return "0:00";
+
+    const minutes = Number(digits.slice(-2));
+    const hours = Number(digits.slice(0, -2) || "0");
+    const safeMinutes = Math.min(minutes, 59);
+
+    return `${hours}:${String(safeMinutes).padStart(2, "0")}`;
+};
+
 /* ---------- App ---------- */
 
 function App() {
@@ -42,9 +54,7 @@ function App() {
 
     const plannedMinutes = timeToMinutes(plannedEndTime);
     const actualMinutes = timeToMinutes(actualEndTime);
-
     const todayOvertime = actualMinutes > plannedMinutes ? actualMinutes - plannedMinutes : 0;
-
     const weeklyTotal = weeklyOvertimeMinutes + todayOvertime;
 
     /* ---------- localStorage ---------- */
@@ -59,34 +69,28 @@ function App() {
 
     /* ---------- handlers ---------- */
 
-    const handleWeeklyOvertimeChange = (value: string) => {
-        setWeeklyOvertimeInput(value);
-        setWeeklyOvertimeMinutes(timeToMinutes(value));
-    };
-
-    // 週途中の保存
+    // 週途中保存
     const handleSaveWeekly = () => {
         setWeeklyOvertimeMinutes(weeklyTotal);
         setWeeklyOvertimeInput(minutesToTime(weeklyTotal));
         setActualEndTime(INITIAL_TIME);
     };
 
-    // ★ 合計（週締め）
+    // 週締め合算
     const handleTotal = () => {
         const sum = weeklyTotal + totalOvertimeMinutes;
 
-        // 合計更新
         setGrandTotalMinutes(sum);
         setTotalOvertimeMinutes(sum);
         setTotalInput(minutesToTime(sum));
 
-        // ★ 週のリセット
+        // 週リセット
         setWeeklyOvertimeMinutes(0);
         setWeeklyOvertimeInput("0:00");
         setActualEndTime(INITIAL_TIME);
     };
 
-    // 全初期化
+    // 全リセット
     const handleResetAll = () => {
         setWeeklyOvertimeMinutes(0);
         setWeeklyOvertimeInput("0:00");
@@ -122,7 +126,18 @@ function App() {
 
                     <Box>
                         <Text fontSize="sm">昨日までの残業時間</Text>
-                        <Input type="text" placeholder="例: 12:30" value={weeklyOvertimeInput} onChange={(e) => handleWeeklyOvertimeChange(e.target.value)} />
+                        <Input
+                            type="text"
+                            inputMode="numeric"
+                            placeholder="hhmm（例: 330）"
+                            value={weeklyOvertimeInput}
+                            onChange={(e) => setWeeklyOvertimeInput(e.target.value.replace(/\D/g, ""))}
+                            onBlur={() => {
+                                const normalized = normalizeHHMM(weeklyOvertimeInput);
+                                setWeeklyOvertimeInput(normalized);
+                                setWeeklyOvertimeMinutes(timeToMinutes(normalized));
+                            }}
+                        />
                     </Box>
 
                     <Divider />
@@ -151,11 +166,14 @@ function App() {
                         <Text fontSize="sm">先週までの残業時間</Text>
                         <Input
                             type="text"
-                            placeholder="例: 120:00"
+                            inputMode="numeric"
+                            placeholder="hhmm（例: 1234）"
                             value={totalInput}
-                            onChange={(e) => {
-                                setTotalInput(e.target.value);
-                                setTotalOvertimeMinutes(timeToMinutes(e.target.value));
+                            onChange={(e) => setTotalInput(e.target.value.replace(/\D/g, ""))}
+                            onBlur={() => {
+                                const normalized = normalizeHHMM(totalInput);
+                                setTotalInput(normalized);
+                                setTotalOvertimeMinutes(timeToMinutes(normalized));
                             }}
                         />
                     </Box>
